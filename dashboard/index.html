@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Car Insurance AI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: #f4f7fb;
+            color: #172033;
+            min-height: 100vh;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .header {
+            background: #0b1f3a;
+            color: white;
+
+            padding: 22px 40px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            min-height: 110px;
+        }
+
+        .brand h1 {
+            font-size: 26px;
+            margin-bottom: 5px;
+        }
+
+        .brand p {
+            color: #b8c7dc;
+            font-size: 15px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            font-size: 15px;
+        }
+
+        .status-dot {
+            width: 11px;
+            height: 11px;
+
+            background: #20c878;
+            border-radius: 50%;
+
+            box-shadow: 0 0 12px rgba(32, 200, 120, 0.6);
+        }
+
+        .divider {
+            width: 1px;
+            height: 42px;
+            background: #52627a;
+        }
+
+        .profile {
+            text-align: right;
+        }
+
+        .profile-name {
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .profile-title {
+            color: #b8c7dc;
+            font-size: 13px;
+            margin-top: 3px;
+        }
+
+        /* =========================
+           MAIN LAYOUT
+        ========================= */
+
+        .container {
+            width: min(1350px, 94%);
+            margin: 40px auto;
+
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+        }
+
+        .card {
+            background: white;
+
+            border-radius: 16px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 8px 25px rgba(20, 35, 60, 0.07);
+        }
+
+        .card h2 {
+            font-size: 23px;
+            margin-bottom: 7px;
+        }
+
+        .card-subtitle {
+            color: #637796;
+            margin-bottom: 28px;
+            font-size: 15px;
+        }
+
+        /* =========================
+           CLAIM FORM
+        ========================= */
+
+        .field-label {
+            display: block;
+
+            font-weight: 700;
+            font-size: 15px;
+
+            margin-bottom: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+
+            resize: vertical;
+
+            border: 1px solid #d3ddec;
+            border-radius: 12px;
+
+            padding: 16px;
+
+            font-family: inherit;
+            font-size: 15px;
+
+            color: #172033;
+
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: #2d66e8;
+            box-shadow: 0 0 0 3px rgba(45, 102, 232, 0.10);
+        }
+
+        /* =========================
+           UPLOAD AREA
+        ========================= */
+
+        .upload-box {
+            margin-top: 28px;
+
+            border: 2px dashed #cbd7e8;
+
+            border-radius: 14px;
+
+            min-height: 205px;
+
+            display: flex;
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: center;
+
+            text-align: center;
+
+            padding: 20px;
+
+            transition: 0.2s ease;
+        }
+
+        .upload-box.dragover {
+            border-color: #2d66e8;
+            background: #f5f8ff;
+        }
+
+        .upload-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .upload-subtitle {
+            color: #637796;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .file-input {
+            margin-bottom: 12px;
+        }
+
+        .file-name {
+            color: #50627d;
+            font-size: 14px;
+        }
+
+        .preview {
+            display: none;
+
+            max-width: 360px;
+            max-height: 250px;
+
+            margin-top: 15px;
+
+            border-radius: 10px;
+
+            object-fit: cover;
+
+            box-shadow:
+                0 5px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        /* =========================
+           BUTTON
+        ========================= */
+
+        .analyse-button {
+            width: 100%;
+
+            margin-top: 28px;
+
+            border: none;
+            border-radius: 12px;
+
+            padding: 16px;
+
+            background: #2d66e8;
+            color: white;
+
+            font-size: 17px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.2s ease;
+        }
+
+        .analyse-button:hover {
+            background: #2458cf;
+        }
+
+        .analyse-button:disabled {
+            background: #91a9d9;
+            cursor: not-allowed;
+        }
+
+        /* =========================
+           RESULT CARDS
+        ========================= */
+
+        .result-section {
+            background: #f7f9fc;
+
+            border-radius: 13px;
+
+            padding: 20px;
+
+            margin-bottom: 17px;
+        }
+
+        .result-section h3 {
+            font-size: 17px;
+            margin-bottom: 16px;
+        }
+
+        .result-content {
+            color: #34445d;
+
+            line-height: 1.65;
+
+            font-size: 15px;
+
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        /* =========================
+           STATUS BADGES
+        ========================= */
+
+        .status {
+            display: inline-block;
+
+            padding: 7px 14px;
+
+            border-radius: 20px;
+
+            background: #fff0c7;
+
+            color: #9a5b00;
+
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .status.completed {
+            background: #d9f7e6;
+            color: #08783f;
+        }
+
+        .status.error {
+            background: #ffe0e0;
+            color: #b42318;
+        }
+
+        .human-warning {
+            color: #b66b00;
+            font-weight: 700;
+        }
+
+        /* =========================
+           LOADING
+        ========================= */
+
+        .loading {
+            display: none;
+
+            margin-top: 14px;
+
+            text-align: center;
+
+            color: #52627a;
+
+            font-size: 14px;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        .footer {
+            text-align: center;
+
+            color: #71819a;
+
+            font-size: 13px;
+
+            padding: 20px 20px 35px;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 900px) {
+
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header-right {
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 650px) {
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .profile {
+                text-align: right;
+            }
+
+            .container {
+                width: 94%;
+                margin: 20px auto;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <header class="header">
+
+        <div class="brand">
+
+            <h1>🚗 Car Insurance AI</h1>
+
+            <p>
+                Multi-Agent Claims Assessment Platform
+            </p>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <div class="system-status">
+
+                <span class="status-dot"></span>
+
+                <span>
+                    AI System Online
+                </span>
+
+            </div>
+
+
+            <div class="divider"></div>
+
+
+            <div class="profile">
+
+                <div class="profile-name">
+                    YONGA. B F
+                </div>
+
+                <div class="profile-title">
+                    AI/ML Program Graduate
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================= -->
+
+    <main class="container">
+
+
+        <!-- =====================
+             LEFT CARD
+        ====================== -->
+
+        <section class="card">
+
+            <h2>
+                Submit Insurance Claim
+            </h2>
+
+            <p class="card-subtitle">
+                Provide the accident details and upload a
+                photograph for AI analysis.
+            </p>
+
+            <!-- CLAIMANT INFORMATION -->
+
+<div class="claim-fields">
+
+    <div class="form-group">
+        <label for="customerName">Customer Name</label>
+        <input
+            type="text"
+            id="customerName"
+            name="customerName"
+            placeholder="Enter customer full name"
+        >
+    </div>
+
+    <div class="form-group">
+        <label for="policyNumber">Policy Number</label>
+        <input
+            type="text"
+            id="policyNumber"
+            name="policyNumber"
+            placeholder="e.g. POL-2026-001245"
+        >
+    </div>
+
+    <div class="form-group">
+        <label for="vehicleRegistration">Vehicle Registration</label>
+        <input
+            type="text"
+            id="vehicleRegistration"
+            name="vehicleRegistration"
+            placeholder="e.g. AB12 CDE"
+        >
+    </div>
+
+</div>
+
+
+            <!-- CLAIM DESCRIPTION -->
+
+            <label
+                class="field-label"
+                for="claimDescription"
+            >
+                Claim Description
+            </label>
+
+            <textarea
+                id="claimDescription"
+                placeholder="Describe the accident and damage..."
+            >The policyholder reports that their vehicle was involved in a road traffic accident. The front of the vehicle was damaged in a collision.</textarea>
+
+
+            <!-- IMAGE UPLOAD -->
+
+            <div
+                class="upload-box"
+                id="uploadBox"
+            >
+
+                <div class="upload-title">
+                    Accident Photograph
+                </div>
+
+                <div class="upload-subtitle">
+                    Upload a JPG, PNG or WEBP image
+                </div>
+
+                <input
+                    class="file-input"
+                    type="file"
+                    id="imageInput"
+                    accept="image/jpeg,image/png,image/webp"
+                >
+
+                <div
+                    class="file-name"
+                    id="fileName"
+                >
+                    No file chosen
+                </div>
+
+                <img
+                    id="preview"
+                    class="preview"
+                    alt="Accident photograph preview"
+                >
+
+            </div>
+
+
+            <!-- ANALYSE BUTTON -->
+
+            <button
+                id="analyseButton"
+                class="analyse-button"
+                type="button"
+            >
+                Analyse Claim
+            </button>
+
+
+            <div
+                id="loading"
+                class="loading"
+            >
+                Processing claim through the AI agents...
+            </div>
+
+        </section>
+
+
+        <!-- =====================
+             RIGHT CARD
+        ====================== -->
+
+        <section class="card">
+
+            <h2>
+                AI Assessment
+            </h2>
+
+            <p class="card-subtitle">
+                Results from the Policy, Vision, RAG and
+                Decision Agents.
+            </p>
+
+
+            <!-- STATUS -->
+
+<div class="result-section">
+
+    <h3>
+        Assessment Status
+    </h3>
+
+    <div
+        id="status"
+        class="status"
+    >
+        Awaiting Claim
+    </div>
+
+    <div class="claim-metadata">
+
+        <div class="metadata-item">
+            <span class="metadata-label">
+                Claim ID
+            </span>
+
+            <strong id="claimId">
+                Not generated
+            </strong>
+        </div>
+
+        <div class="metadata-item">
+            <span class="metadata-label">
+                Assessment Date
+            </span>
+
+            <strong id="assessmentDate">
+                Not available
+            </strong>
+        </div>
+
+    </div>
+
+</div>
+
+
+            <!-- HUMAN REVIEW -->
+
+            <div class="result-section">
+
+                <h3>
+                    Human Review
+                </h3>
+
+                <div
+                    id="humanReview"
+                    class="result-content"
+                >
+                    No assessment yet.
+                </div>
+
+            </div>
+
+
+            <!-- POLICY -->
+
+            <div class="result-section">
+
+                <h3>
+                    Policy Assessment
+                </h3>
+
+                <div
+                    id="policyAssessment"
+                    class="result-content"
+                >
+                    Submit a claim to receive the AI policy assessment.
+                </div>
+
+            </div>
+
+
+            <!-- DAMAGE -->
+
+            <div class="result-section">
+
+                <h3>
+                    Damage Assessment
+                </h3>
+
+                <div
+                    id="damageAssessment"
+                    class="result-content"
+                >
+                    Submit an accident photograph to receive
+                    the AI damage assessment.
+                </div>
+
+            </div>
+
+
+            <!-- FINAL DECISION -->
+
+            <div class="result-section">
+
+                <h3>
+                    Final Decision
+                </h3>
+
+                <div
+                    id="finalDecision"
+                    class="result-content"
+                >
+                    No decision available yet.
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         FOOTER
+    ========================= -->
+
+    <footer class="footer">
+
+        Car Insurance Multi-Agent AI
+        · Powered by FastAPI, LangGraph, RAG & Vision AI
+
+    </footer>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+
+    <script>
+
+        // ============================================================
+// CAR INSURANCE AI — FRONTEND APPLICATION
+// ============================================================
+
+// ------------------------------------------------------------
+// API
+// ------------------------------------------------------------
+
+const API_URL = "http://127.0.0.1:8000/assess-claim";
+
+// ------------------------------------------------------------
+// DOM ELEMENTS
+// ------------------------------------------------------------
+
+const imageInput = document.getElementById("imageInput");
+const preview = document.getElementById("preview");
+const fileName = document.getElementById("fileName");
+const uploadBox = document.getElementById("uploadBox");
+const analyseButton = document.getElementById("analyseButton");
+const loading = document.getElementById("loading");
+const customerName = document.getElementById("customerName");
+const policyNumber = document.getElementById("policyNumber");
+const vehicleRegistration = document.getElementById("vehicleRegistration");
+
+const status = document.getElementById("status");
+const humanReview = document.getElementById("humanReview");
+const policyAssessment = document.getElementById("policyAssessment");
+const damageAssessment = document.getElementById("damageAssessment");
+const finalDecision = document.getElementById("finalDecision");
+
+const claimId = document.getElementById("claimId");
+const assessmentDate = document.getElementById("assessmentDate");
+
+
+// ------------------------------------------------------------
+// HELPER FUNCTIONS
+// ------------------------------------------------------------
+
+function generateClaimId() {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+
+    const randomPart = Math.random()
+        .toString(36)
+        .substring(2, 8)
+        .toUpperCase();
+
+    return `CIA-${year}${month}${day}-${randomPart}`;
+}
+
+
+function setClaimMetadata() {
+    const now = new Date();
+
+    if (claimId) {
+        claimId.textContent = generateClaimId();
+    }
+
+    if (assessmentDate) {
+        assessmentDate.textContent = now.toLocaleString(
+            "en-GB",
+            {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+            }
+        );
+    }
+}
+function setStatus(text, type = "status") {
+    if (!status) return;
+
+    status.textContent = text;
+    status.className = type;
+}
+
+
+function showLoading(show) {
+    if (!loading) return;
+
+    loading.style.display = show ? "block" : "none";
+}
+
+
+function getValue(object, keys, fallback = "") {
+    if (!object || typeof object !== "object") {
+        return fallback;
+    }
+
+    for (const key of keys) {
+        if (
+            object[key] !== undefined &&
+            object[key] !== null &&
+            object[key] !== ""
+        ) {
+            return object[key];
+        }
+    }
+
+    return fallback;
+}
+
+
+function formatAssessment(value, fallback) {
+    if (value === undefined || value === null || value === "") {
+        return fallback;
+    }
+
+    if (typeof value === "string") {
+        return value;
+    }
+
+    if (Array.isArray(value)) {
+        return value.join("\n\n");
+    }
+
+    if (typeof value === "object") {
+        return JSON.stringify(value, null, 2);
+    }
+
+    return String(value);
+}
+
+
+// ------------------------------------------------------------
+// IMAGE PREVIEW
+// ------------------------------------------------------------
+
+function displaySelectedImage(file) {
+    if (!file) {
+        preview.style.display = "none";
+        fileName.style.display = "none";
+        return;
+    }
+
+    const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+        alert("Please select a JPG, PNG or WEBP image.");
+
+        imageInput.value = "";
+        preview.style.display = "none";
+        fileName.style.display = "none";
+
+        return;
+    }
+
+    fileName.textContent = file.name;
+    fileName.style.display = "block";
+
+    const reader = new FileReader();
+
+    reader.onload = function(event) {
+        preview.src = event.target.result;
+        preview.style.display = "block";
+    };
+
+    reader.readAsDataURL(file);
+}
+
+
+// ------------------------------------------------------------
+// FILE INPUT
+// ------------------------------------------------------------
+
+if (imageInput) {
+    imageInput.addEventListener("change", function() {
+        const file = imageInput.files[0];
+
+        displaySelectedImage(file);
+    });
+}
+
+
+// ------------------------------------------------------------
+// DRAG & DROP
+// ------------------------------------------------------------
+
+if (uploadBox) {
+
+    uploadBox.addEventListener("dragover", function(event) {
+        event.preventDefault();
+
+        uploadBox.classList.add("dragover");
+    });
+
+
+    uploadBox.addEventListener("dragleave", function() {
+        uploadBox.classList.remove("dragover");
+    });
+
+
+    uploadBox.addEventListener("drop", function(event) {
+        event.preventDefault();
+
+        uploadBox.classList.remove("dragover");
+
+        const files = event.dataTransfer.files;
+
+        if (!files || !files.length) {
+            return;
+        }
+
+        imageInput.files = files;
+
+        const changeEvent = new Event("change", {
+            bubbles: true
+        });
+
+        imageInput.dispatchEvent(changeEvent);
+    });
+}
+
+
+// ------------------------------------------------------------
+// RESET RESULTS
+// ------------------------------------------------------------
+
+function resetResults() {
+
+    if (status) {
+        status.textContent = "Processing...";
+        status.className = "status";
+    }
+
+    if (humanReview) {
+        humanReview.textContent = "AI assessment in progress...";
+    }
+
+    if (policyAssessment) {
+        policyAssessment.textContent =
+            "Analysing policy coverage...";
+    }
+
+    if (damageAssessment) {
+        damageAssessment.textContent =
+            "Analysing vehicle damage...";
+    }
+
+    if (finalDecision) {
+        finalDecision.textContent =
+            "Waiting for assessment...";
+    }
+}
+
+
+// ------------------------------------------------------------
+// DISPLAY RESULTS
+// ------------------------------------------------------------
+
+function displayResults(data) {
+
+    console.log("AI assessment response:", data);
+
+        setClaimMetadata();
+
+    // --------------------------------------------------------
+    // Support different response structures
+    // --------------------------------------------------------
+
+    const result =
+        data.assessment ||
+        data.result ||
+        data.data ||
+        data;
+
+
+    // --------------------------------------------------------
+    // STATUS
+    // --------------------------------------------------------
+
+    const assessmentStatus = getValue(
+        result,
+        [
+            "status",
+            "assessment_status",
+            "claim_status"
+        ],
+        "completed"
+    );
+
+    setStatus(
+        assessmentStatus,
+        "status completed"
+    );
+
+
+    // --------------------------------------------------------
+    // HUMAN REVIEW
+    // --------------------------------------------------------
+
+    const humanReviewValue = getValue(
+        result,
+        [
+            "human_review",
+            "human_review_required",
+            "review",
+            "review_required"
+        ],
+        ""
+    );
+
+    if (typeof humanReviewValue === "boolean") {
+
+        humanReview.textContent =
+            humanReviewValue
+                ? "⚠️ Human review is required."
+                : "No human review required.";
+
+    } else {
+
+        humanReview.textContent = formatAssessment(
+            humanReviewValue,
+            "⚠️ Human review is required."
+        );
+    }
+
+
+    // --------------------------------------------------------
+    // POLICY ASSESSMENT
+    // --------------------------------------------------------
+
+    const policyValue = getValue(
+        result,
+        [
+            "policy_assessment",
+            "policy_result",
+            "policy",
+            "coverage_assessment"
+        ],
+        ""
+    );
+
+    policyAssessment.textContent = formatAssessment(
+        policyValue,
+        "No policy assessment available."
+    );
+
+
+    // --------------------------------------------------------
+    // DAMAGE ASSESSMENT
+    // --------------------------------------------------------
+
+    const damageValue = getValue(
+        result,
+        [
+            "damage_assessment",
+            "vision_assessment",
+            "vision_result",
+            "damage",
+            "vehicle_damage"
+        ],
+        ""
+    );
+
+    damageAssessment.textContent = formatAssessment(
+        damageValue,
+        "No damage assessment available."
+    );
+
+
+    // --------------------------------------------------------
+    // FINAL DECISION
+    // --------------------------------------------------------
+
+    const decisionValue = getValue(
+        result,
+        [
+            "final_decision",
+            "decision",
+            "assessment",
+            "overall_assessment"
+        ],
+        ""
+    );
+
+    finalDecision.textContent = formatAssessment(
+        decisionValue,
+        "Assessment completed. Human verification is required."
+    );
+}
+
+
+// ------------------------------------------------------------
+// ANALYSE CLAIM
+// ------------------------------------------------------------
+
+if (analyseButton) {
+
+    analyseButton.addEventListener("click", async function() {
+
+        // ----------------------------------------------------
+        // Claim description
+        // ----------------------------------------------------
+
+        const claimDescriptionElement =
+            document.getElementById("claimDescription");
+
+        const claimDescription =
+            claimDescriptionElement
+                ? claimDescriptionElement.value.trim()
+                : "";
+
+
+        // ----------------------------------------------------
+        // Validate claim description
+        // ----------------------------------------------------
+
+        if (!claimDescription) {
+
+            alert(
+                "Please enter a claim description."
+            );
+
+            return;
+        }
+
+
+        // ----------------------------------------------------
+        // Validate image
+        // ----------------------------------------------------
+
+        if (
+            !imageInput ||
+            !imageInput.files ||
+            !imageInput.files.length
+        ) {
+
+            alert(
+                "Please upload an accident photograph."
+            );
+
+            return;
+        }
+
+
+        const imageFile = imageInput.files[0];
+
+
+        // ----------------------------------------------------
+        // Validate image type
+        // ----------------------------------------------------
+
+        const allowedTypes = [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        ];
+
+        if (!allowedTypes.includes(imageFile.type)) {
+
+            alert(
+                "Please upload a JPG, PNG or WEBP image."
+            );
+
+            return;
+        }
+
+
+        // ----------------------------------------------------
+        // Prepare UI
+        // ----------------------------------------------------
+
+        analyseButton.disabled = true;
+
+        showLoading(true);
+
+        resetResults();
+
+
+        // ----------------------------------------------------
+        // Build multipart form
+        // ----------------------------------------------------
+
+        const formData = new FormData();
+        
+        formData.append(
+            "claim_description",
+            claimDescription
+        );
+
+        formData.append(
+    "customer_name",
+    customerName.value
+);
+
+formData.append(
+    "policy_number",
+    policyNumber.value
+);
+
+formData.append(
+    "vehicle_registration",
+    vehicleRegistration.value
+);
+
+        formData.append(
+            "image",
+            imageFile
+        );
+
+
+        // ----------------------------------------------------
+        // Call FastAPI
+        // ----------------------------------------------------
+
+        try {
+
+            setStatus(
+                "Submitting claim...",
+                "status"
+            );
+
+
+            const response = await fetch(
+                API_URL,
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+
+            // ------------------------------------------------
+            // Read response
+            // ------------------------------------------------
+
+            let data = null;
+
+            try {
+
+                data = await response.json();
+
+            } catch (jsonError) {
+
+                throw new Error(
+                    "The AI claims service returned an invalid response."
+                );
+            }
+
+
+            // ------------------------------------------------
+            // API error
+            // ------------------------------------------------
+
+            if (!response.ok) {
+
+                console.error(
+                    "API error:",
+                    data
+                );
+
+                const errorMessage =
+                    data.detail ||
+                    data.message ||
+                    data.error ||
+                    "The AI claims service could not process this claim.";
+
+                throw new Error(errorMessage);
+            }
+
+
+            // ------------------------------------------------
+            // Display successful result
+            // ------------------------------------------------
+
+            displayResults(data);
+
+
+        } catch (error) {
+
+            console.error(
+                "Claim assessment error:",
+                error
+            );
+
+
+            // ------------------------------------------------
+            // Display error
+            // ------------------------------------------------
+
+            setStatus(
+                "Assessment failed",
+                "status error"
+            );
+
+
+            if (humanReview) {
+
+                humanReview.textContent =
+                    "The claim could not be fully assessed.";
+            }
+
+
+            if (policyAssessment) {
+
+                policyAssessment.textContent =
+                    "The AI claims service could not process this claim.";
+            }
+
+
+            if (damageAssessment) {
+
+                damageAssessment.textContent =
+                    "No damage assessment available.";
+            }
+
+
+            if (finalDecision) {
+
+                finalDecision.textContent =
+                    error.message ||
+                    "Unable to connect to the AI claims API.";
+            }
+
+
+            // ------------------------------------------------
+            // Helpful console information
+            // ------------------------------------------------
+
+            console.error(
+                "Make sure FastAPI is running on:",
+                API_URL
+            );
+
+        } finally {
+
+            // ------------------------------------------------
+            // Restore button
+            // ------------------------------------------------
+
+            analyseButton.disabled = false;
+
+            showLoading(false);
+        }
+
+    });
+
+}
+
+
+// ------------------------------------------------------------
+// INITIAL UI STATE
+// ------------------------------------------------------------
+
+if (preview) {
+    preview.style.display = "none";
+}
+
+if (fileName) {
+    fileName.style.display = "none";
+}
+
+if (loading) {
+    loading.style.display = "none";
+}
+
+
+// ------------------------------------------------------------
+// SYSTEM READY
+// ------------------------------------------------------------
+
+console.log(
+    "🚗 Car Insurance AI dashboard loaded successfully."
+);
+
+console.log(
+    "🔗 API:",
+    API_URL
+);
+
+console.log(
+    "🤖 Multi-Agent Pipeline: READY"
+);
+    </script>
+    
+    <!-- =========================================================
+     MULTI-AGENT PIPELINE STATUS
+     ========================================================= -->
+
+<section class="agent-panel">
+
+    <div class="agent-panel-header">
+        <div>
+            <h2>Multi-Agent AI Pipeline</h2>
+            <p>Real-time orchestration of the insurance claim assessment workflow.</p>
+        </div>
+
+        <div class="pipeline-status">
+            <span class="status-dot"></span>
+            System Ready
+        </div>
+    </div>
+
+    <div class="agent-flow">
+
+        <div class="agent-card">
+            <div class="agent-icon">🧠</div>
+            <div class="agent-info">
+                <h3>Supervisor Agent</h3>
+                <p>Orchestrates the claim workflow</p>
+            </div>
+            <span class="agent-status">READY</span>
+        </div>
+
+        <div class="agent-arrow">→</div>
+
+        <div class="agent-card">
+            <div class="agent-icon">📋</div>
+            <div class="agent-info">
+                <h3>Policy Agent</h3>
+                <p>Checks policy coverage</p>
+            </div>
+            <span class="agent-status">READY</span>
+        </div>
+
+        <div class="agent-arrow">→</div>
+
+        <div class="agent-card">
+            <div class="agent-icon">👁️</div>
+            <div class="agent-info">
+                <h3>Vision Agent</h3>
+                <p>Analyses accident damage</p>
+            </div>
+            <span class="agent-status">READY</span>
+        </div>
+
+        <div class="agent-arrow">→</div>
+
+        <div class="agent-card">
+            <div class="agent-icon">🔎</div>
+            <div class="agent-info">
+                <h3>RAG Agent</h3>
+                <p>Retrieves policy evidence</p>
+            </div>
+            <span class="agent-status">READY</span>
+        </div>
+
+        <div class="agent-arrow">→</div>
+
+        <div class="agent-card">
+            <div class="agent-icon">⚖️</div>
+            <div class="agent-info">
+                <h3>Decision Agent</h3>
+                <p>Produces assessment</p>
+            </div>
+            <span class="agent-status">READY</span>
+        </div>
+
+        <div class="agent-arrow">→</div>
+
+        <div class="agent-card human-review-card">
+            <div class="agent-icon">👤</div>
+            <div class="agent-info">
+                <h3>Human Review</h3>
+                <p>Final professional verification</p>
+            </div>
+            <span class="agent-status review-status">REQUIRED</span>
+        </div>
+
+    </div>
+
+</section>
+
+<style>
+
+.agent-panel {
+    width: calc(100% - 96px);
+    margin: 32px auto 50px;
+    padding: 28px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+    border: 1px solid #e7ebf2;
+}
+
+.agent-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 26px;
+}
+
+.agent-panel-header h2 {
+    margin: 0 0 6px;
+    color: #172033;
+    font-size: 22px;
+}
+
+.agent-panel-header p {
+    margin: 0;
+    color: #667085;
+    font-size: 14px;
+}
+
+.pipeline-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border-radius: 999px;
+    background: #e9f9ef;
+    color: #087a3e;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.status-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #20c77a;
+}
+
+.agent-flow {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 12px;
+    align-items: stretch;
+}
+
+.agent-card {
+    flex: 1 0 190px;
+    min-height: 145px;
+    padding: 18px;
+    background: #f7f9fc;
+    border: 1px solid #e4e9f1;
+    border-radius: 16px;
+    position: relative;
+}
+
+.agent-icon {
+    font-size: 26px;
+    margin-bottom: 12px;
+}
+
+.agent-info h3 {
+    margin: 0 0 7px;
+    font-size: 15px;
+    color: #172033;
+}
+
+.agent-info p {
+    margin: 0;
+    color: #667085;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.agent-status {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: #e9f9ef;
+    color: #087a3e;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.agent-arrow {
+    display: none;
+}
+
+.human-review-card {
+    border-color: #f2d38a;
+    background: #fffaf0;
+}
+
+.review-status {
+    background: #fff0c7;
+    color: #a15c00;
+}
+
+@media (max-width: 900px) {
+
+    .agent-panel {
+        width: calc(100% - 32px);
+        padding: 20px;
+    }
+
+    .agent-panel-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .agent-flow {
+        flex-direction: column;
+    }
+
+    .agent-arrow {
+        transform: rotate(90deg);
+        height: 20px;
+    }
+
+    .agent-card {
+    min-width: 0;
+    min-height: 145px;
+    padding: 16px;
+    background: #f7f9fc;
+    border: 1px solid #e4e9f1;
+    border-radius: 16px;
+    position: relative;
+     }
+}
+
+</style>
+
+</body>
+
+</html>
